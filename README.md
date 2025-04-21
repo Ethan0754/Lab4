@@ -1,5 +1,5 @@
 Name the two patterns you wish to implement and explain what advantages you hope to achieve with them.\
-Observer Pattern, Template Method Pattern\\
+Observer Pattern, Template Method Pattern\
 
 Describe how you implement the patterns, including additional interfaces, classes, and how these will integrate with the classes that you already have.\
 Observer Pattern - I will create a PurseObserver interface that PursePanel will implement, and in the constructor of PursePanel I will purse.AddObserver to add the pursePanel object to the list of observers that purse will call whenver there is an update.\
