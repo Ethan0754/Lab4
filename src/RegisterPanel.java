@@ -1,56 +1,77 @@
-package Lab1;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class RegisterPanel extends JPanel {
-    private Register register = new Register();
-
+    private Purse purse;
+    private PursePanel pursePanel;
+    private Register register;
     private JPanel inputPanel;
-
     private JTextField input;
-
-    private PursePanel changePanel;
+    private JComboBox<String> regionChoice;
+    private String[] regions = {"US", "EU"};
+    private double userInput;
 
     RegisterPanel() {
+        // back end logic
+        purse = new Purse();
+        register = new USRegister(purse);
 
+        // GUI
+        pursePanel = new PursePanel(purse);
+
+        // user input GUI
         inputPanel = new JPanel();
-
         input = new JTextField();
 
-        changePanel = new PursePanel();
+        regionChoice = new JComboBox<>(regions);
+        regionChoice.addActionListener(new ChoiceListener());
 
         this.setBackground(Color.WHITE);
+
         inputPanel.setBackground(Color.BLACK);
+        inputPanel.setPreferredSize(new Dimension(200, 100));
+
         input.setBackground(Color.WHITE);
-        inputPanel.setPreferredSize(new Dimension(100, 50));
         input.setPreferredSize(new Dimension(80, 40));
+        input.addActionListener(new InputListener()); //handles the input to the gui
 
-        changePanel.setPreferredSize(new Dimension(1000, 1000));
-
-        //handles the input to the gui
-        input.addActionListener(new InputListener());
-
-        this.setBackground(Color.WHITE);
+        pursePanel.setPreferredSize(new Dimension(1000, 1000));
 
 
+        // add components to panels
         this.add(inputPanel);
         inputPanel.add(input);
-        this.add(changePanel);
+        inputPanel.add(regionChoice);
+        this.add(pursePanel);
     }
-
 
 
 
     private class InputListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            double num = Double.parseDouble(input.getText());
-            String text = register.makeChange(num).toString();
-            System.out.println(text);
-            changePanel.purse = register.makeChange(num);
-            changePanel.repaint();
+            try {
+                userInput = Double.parseDouble(input.getText());
+                register.Count(userInput);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+            }
+        }
+    }
+
+    private class ChoiceListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            switch (regionChoice.getSelectedIndex()){
+                case 0:
+                    register = new USRegister(purse);
+                    break;
+                case 1:
+                    register= new EURegister(purse);
+                    break;
+
+            }
+            register.Count(userInput);
         }
     }
 }

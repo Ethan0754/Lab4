@@ -1,26 +1,26 @@
-package Lab1;
-
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class Purse {
 
-    public Map<Denomination, Integer> cash;
+    private Map<Denomination, Integer> cash;
+    private final List<PurseObserver> observers = new ArrayList<>();
 
     public Purse() {
         cash = new LinkedHashMap<>();
-    } //linked hash map keeps the order of the objects that they were added in
+    }
 
     public void add(Denomination d, int numBills) {
         cash.put(d, numBills);
+        notifyObservers();
     }
 
-    public double remove(Denomination d, int numBills) {
-        double total = d.amt() * numBills;
-        cash.remove(d);
-
-        return total;
+    public void removeAll() {
+        cash.clear();
+        notifyObservers();
     }
 
     public double getValue(){
@@ -42,6 +42,26 @@ public class Purse {
         }
         return rep;
     }
+
+    public Map<Denomination, Integer> getCash() {
+        return cash;
+    }
+
+    public void addObserver(PurseObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(PurseObserver observer) {
+        observers.remove(observer);
+    }
+
+    // Notify all observers of a change in the purse
+    private void notifyObservers() {
+        for (PurseObserver observer : observers) {
+            observer.update(this); // Pass the purse itself as the source
+        }
+    }
+
 
 
 }

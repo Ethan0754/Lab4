@@ -1,10 +1,6 @@
-package Lab1;
-
 import javax.swing.*;
 import java.awt.*;
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,14 +8,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
-public class PursePanel extends JPanel {
-    public Purse purse;
+public class PursePanel extends JPanel implements PurseObserver {
+    private Purse purse;
 
-    private BufferedImage image;
-
-
-    PursePanel() {
-        purse = new Purse();
+    PursePanel(Purse purse) {
+        this.purse = purse;
+        purse.addObserver(this);
     }
 
     public void paintComponent(Graphics g) {
@@ -29,7 +23,7 @@ public class PursePanel extends JPanel {
         BufferedImage image = null;
         int stack = 0; //var used to move the bills across the x axis
         //for each map in the purse - display the correct amount of bills/coins and move the next image appropriately
-        for (Map.Entry<Denomination, Integer> bills : purse.cash.entrySet()) {
+        for (Map.Entry<Denomination, Integer> bills : purse.getCash().entrySet()) {
             //read file
             try {
                 image = ImageIO.read(new File(bills.getKey().img()));
@@ -58,11 +52,7 @@ public class PursePanel extends JPanel {
                 stack += 150;
             }
         }
-
-
-
     }
-
 
     private void drawScaledImage(Graphics2D g2d, BufferedImage image, int x, int y, int width, int height) {
         AffineTransform at = new AffineTransform();
@@ -71,6 +61,11 @@ public class PursePanel extends JPanel {
         g2d.drawRenderedImage(image, at);
     }
 
+    @Override
+    public void update(Purse purse) {
+        // Called whenever the Purse state changes
+        this.purse = purse;  // Update the Purse
+        repaint();           // Repaint the panel
 
-
+    }
 }
